@@ -1,40 +1,61 @@
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import cmp_template.composeapp.generated.resources.Res
-import cmp_template.composeapp.generated.resources.compose_multiplatform
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
+import di.commonModule
+import di.platformModule
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
+import io.github.aakira.napier.log
+import org.koin.core.context.startKoin
+import org.koin.dsl.KoinAppDeclaration
+import ui.screens.MainScreen
+import ui.theme.AppTheme
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
-@Preview
-fun App() {
-    MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
+fun App(
+    darkTheme: Boolean,
+    dynamicColor: Boolean,
+) {
+    AppTheme(
+        darkTheme = darkTheme,
+        dynamicColor = dynamicColor
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Navigator(
+                screen = MainScreen(),
+                onBackPressed = { currentScreen ->
+                    true
                 }
+            ) { navigator ->
+                SlideTransition(navigator)
             }
         }
+    }
+}
+
+fun appInit(appDeclaration: KoinAppDeclaration = {}) {
+    Napier.base(DebugAntilog())
+
+    log(tag = "Napier") { "Application Started" }
+
+    initKoin(
+        appDeclaration
+    )
+}
+
+private fun initKoin(
+    appDeclaration: KoinAppDeclaration = {}
+) {
+    startKoin {
+        appDeclaration()
+        modules(commonModule(), platformModule())
     }
 }
