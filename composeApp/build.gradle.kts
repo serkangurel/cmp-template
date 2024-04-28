@@ -43,6 +43,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(compose.materialIconsExtended)
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
             implementation(libs.napier)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenmodel)
@@ -50,6 +51,9 @@ kotlin {
             implementation(libs.voyager.tab.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
+
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation(libs.androidx.navigation.compose)
         }
     }
 }
